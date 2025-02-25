@@ -1,5 +1,4 @@
 FROM debian:bullseye-slim as base
-#FROM eilandert/debian-base:bullseye as base
 ARG VERSION=4.0.11
 ARG CHECKSUM=eb63a40f94d96fe7c7e3dcc497f7bbc2978cd7df
 WORKDIR /
@@ -19,14 +18,6 @@ RUN \
   unzip formalms.zip && \
   rm formalms.zip && \
   cp /formalms/config.dist.php /formalms/config.php
-RUN \
-  echo "**** install php8.1-mysql packages ****" && \
-  apt-get update && \
-  apt-get install -y --no-install-recommends wget gnupg && \
-  echo "deb [trusted=yes] http://edge.deb.myguard.nl:8888/mirror/ondrej-php bullseye main"  > /etc/apt/sources.list.d/ondrej-ppa.list && \
-# wget -qO /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
-  apt-get update && \
-  apt-get install -o Debug::pkgProblemResolver=true  -o Debug::Acquire::http=true -o Debug::pkgDepCache::Marker= -m -y --no-install-recommends php8.1-mysql
 
 FROM php:8.1-apache-bullseye as php
 
@@ -34,16 +25,7 @@ ENV APACHE_DOCUMENT_ROOT /app
 WORKDIR /app
 COPY --from=base /formalms .
 #ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-
 #RUN install-php-extensions pdo mysqli pdo_mysql 
-RUN \
-  echo "**** install php8.1-mysql packages ****" && \
-  apt-get update && \
-  apt-get install -y --no-install-recommends wget gnupg && \
-  echo "deb [trusted=yes] http://edge.deb.myguard.nl:8888/mirror/ondrej-php bullseye main"  > /etc/apt/sources.list.d/ondrej-ppa.list && \
-#  wget -qO /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
-  apt-get update && \
-  apt-get install -o Debug::pkgProblemResolver=true -o Debug::Acquire::http=true -o Debug::pkgDepCache::Marker= -m -y --no-install-recommends php-mysqli
 RUN \
   echo "**** install final packages ****" && \
   apt-get update && \
