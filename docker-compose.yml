@@ -1,31 +1,35 @@
----
-version: '3.1'
-
 services:
 
   formalms:
-    image: nicholaswilde/formalms
+    image: marioja/formalms
     restart: always
     ports:
       - 7080:80
     volumes:
       - formalms:/var/www/html/formalms
     environment:
-      - PUID=1001
-      - GUID=1001
+      PUID: 1001
+      GUID: 1001
+    entrypoint: [
+      "/bin/sh", 
+      "-c", 
+      "sed -i \"s|cfg\\['db_host'\\] = 'localhost'|cfg['db_host'] = '${DB_HOST}'|\" /app/config.php && sed -i \"s|cfg\\['db_user'\\] = 'root'|cfg['db_user'] = '${DB_USER}'|\" /app/config.php && sed -i \"s|cfg\\['db_pass'\\] = ''|cfg['db_pass'] = '${DB_PASS}'|\" /app/config.php && sed -i \"s|cfg\\['db_name'\\] = 'forma'|cfg['db_name'] = '${DB_NAME}'|\" /app/config.php && apache2-foreground"
+    ]
 
   db:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_DATABASE: formalms
-      MYSQL_USER: formalms
-      MYSQL_PASSWORD: formalms
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
       - db:/var/lib/mysql
-      - ./config:/etc/mysql/conf.d
+      - $FORMALMS_PATH/config:/etc/mysql/conf.d
 
 volumes:
   db:
   formalms:
+  nfs_portainer_data_volume:
+    external: true
