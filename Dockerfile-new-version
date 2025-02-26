@@ -1,38 +1,28 @@
-FROM debian:bullseye-slim as base
-ARG VERSION=4.0.11
-ARG CHECKSUM=eb63a40f94d96fe7c7e3dcc497f7bbc2978cd7df
-WORKDIR /
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN \
-  echo "**** install basic packages ****" && \
-  apt-get update && \
-  apt-get install -y --no-install-recommends \
-    unzip \
-    ca-certificates \
-    wget && \
-  apt-get clean && \
-  rm -rf /var/lib/apt/lists/* && \
-  echo "**** download formalms ****" && \
-  wget -O formalms.zip https://sourceforge.net/projects/forma/files/version-4.x/formalms-${VERSION}.zip/download && \
-  echo "${CHECKSUM}  formalms.zip" | sha1sum -c && \
-  unzip formalms.zip && \
-  rm formalms.zip && \
-  cp /formalms/config.dist.php /formalms/config.php
-
 FROM php:8.1-apache-bullseye as php
+ARG VERSION=4.0.11
 
 ENV APACHE_DOCUMENT_ROOT /app
-WORKDIR /app
-COPY --from=base /formalms .
 RUN \
   echo "**** install final packages ****" && \
   apt-get update && \
   apt-get install -y --no-install-recommends \
     dnsutils \
     iproute2 \
-    vim && \
+    vim unzip \
+    wget && \
   apt-get clean && \
-  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/lib/apt/lists/* %% \
+  echo "**** download formalms ****" && \
+  wget -O formalms.zip https://sourceforge.net/projects/forma/files/version-4.x/formalms-${VERSION}.zip/download && \
+  mkdir -p /app && \
+  unzip formalms.zip -d /app && \
+  mv /app/formalms /app/tt && \
+  find /app/tt -mindepth 1 -maxdepth 1 -exec mv -t /app {} + && \
+  rmdir /app/tt && \
+  rm formalms.zip
+  WORKDIR /app
+  RUN \
+  cp config.dist.php config.php && \
   docker-php-ext-configure mysqli && \
   docker-php-ext-install mysqli && \
   docker-php-ext-install pdo pdo_mysql && \
