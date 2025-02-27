@@ -13,9 +13,13 @@ RUN \
     iproute2 \
     vim \
     unzip \
-    wget && \
+    wget \
+    libldap2-dev && \
   apt-get clean && \
-  rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/* && \
+  echo "**** install ldap ****" && \
+  docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
+  docker-php-ext-install ldap
 
 # Enable mod_rewrite
 RUN a2enmod rewrite
@@ -32,6 +36,9 @@ RUN \
   rm formalms.zip
 
 WORKDIR /app
+
+COPY ldap-config.sh /usr/local/bin/ldap-config.sh
+RUN chmod +x /usr/local/bin/ldap-config.sh
 
 # Install required PHP extensions and configure Apache to use /app/formalms as document root
 RUN \
