@@ -6,7 +6,7 @@ services:
     ports:
       - 7080:80
     volumes:
-      - formalms:/var/www/html/formalms
+      - formalms:/app
     environment:
       PUID: 1001
       GUID: 1001
@@ -31,5 +31,3 @@ services:
 volumes:
   db:
   formalms:
-  nfs_portainer_data_volume:
-    external: true
