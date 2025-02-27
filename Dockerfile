@@ -31,6 +31,8 @@ RUN \
   rm formalms.zip
 
 WORKDIR /app
+
+# Install required PHP extensions and configure Apache to use /app/formalms as document root
 RUN \
   cp formalms/config.dist.php formalms/config.php && \
   docker-php-ext-configure mysqli && \
