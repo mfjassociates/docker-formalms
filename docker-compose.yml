@@ -2,7 +2,7 @@ services:
 
   formalms:
     image: marioja/formalms
-    restart: always
+    restart: unless-stopped
     ports:
       - 7080:80
     volumes:
@@ -18,15 +18,18 @@ services:
 
   db:
     image: mysql:5.7
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      MYSQL_SQL_MODE: NO_ENGINE_SUBSTITUTION
+    command:
+      - --character-set-server=utf8
+      - --collation-server=utf8_general_ci
     volumes:
       - db:/var/lib/mysql
-      - $FORMALMS_PATH/config:/etc/mysql/conf.d
 
 volumes:
   db:
