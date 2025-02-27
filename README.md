@@ -1,10 +1,4 @@
-# Docker Forma LMS
-[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/nicholaswilde/formalms)](https://hub.docker.com/r/nicholaswilde/formalms)
-[![Docker Pulls](https://img.shields.io/docker/pulls/nicholaswilde/formalms)](https://hub.docker.com/r/nicholaswilde/formalms)
-[![GitHub](https://img.shields.io/github/license/nicholaswilde/docker-formalms)](./LICENSE)
-[![hadolint](https://github.com/nicholaswilde/docker-cryptpad/workflows/hadolint/badge.svg?branch=main)](https://github.com/nicholaswilde/docker-formalms/actions?query=workflow%3Ahadolint)
-[![yamllint](https://github.com/nicholaswilde/docker-cryptpad/workflows/yamllint/badge.svg?branch=main)](https://github.com/nicholaswilde/docker-formalms/actions?query=workflow%3Ayamllint)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+# Docker Forma LMS (Based on Nicholas Wilde formalms container)
 
 A docker container for the e-learning platform [Forma LMS](https://www.formalms.org/) based on the official php:7.0-apache image.
 
@@ -14,7 +8,7 @@ In order to run this container you'll need:
 
 A compatible SQL database:
 
-* MySQL 5.0 or higher or MariaDB  5.5 or higher
+* MySQL 5.7 or MariaDB  10.3
 * UTF8 character set
 * MySQL strict mode disabled
 
@@ -53,27 +47,16 @@ See [Wiki](https://github.com/nicholaswilde/docker-template/wiki/Development).
 
 See [Wiki](https://github.com/nicholaswilde/docker-template/wiki/Troubleshooting).
 
-## Pre-commit hook
-
-If you want to automatically generate `README.md` files with a pre-commit hook, make sure you
-[install the pre-commit binary](https://pre-commit.com/#install), and add a [.pre-commit-config.yaml file](./.pre-commit-config.yaml)
-to your project. Then run:
-
-```bash
-pre-commit install
-pre-commit install-hooks
-```
-Currently, this only works on `amd64` systems.
-
 ## Built With
 
-* Forma LMS v2.3.0.2
-* PHP v7.0
+* Forma LMS v4.0.11
+* PHP v8.1
 * MySQL v5.7
 
 ## Acknowledgments
 
 * [The Forma LMS project](https://www.formalms.org/)
+* [Nicholas Wilde](https://github.com/nicholaswilde).
 
 ## License
 
@@ -84,3 +67,4 @@ Currently, this only works on `amd64` systems.
 * **Lorenzo Dallagà** - *Initial work*
 * [RazgulTraka](https://github.com/RazgulTraka)
 * [Nicholas Wilde](https://github.com/nicholaswilde)
+* [Mario Jauvin](https://github.com/marioja)
