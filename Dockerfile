@@ -1,7 +1,7 @@
-FROM php:8.1-apache-bullseye as php
+FROM php:8.1-apache-bullseye
 ARG VERSION=4.0.11
 
-ENV APACHE_DOCUMENT_ROOT /app
+ENV APACHE_DOCUMENT_ROOT /app/formalms
 
 # Install necessary packages
 RUN \
@@ -20,19 +20,19 @@ RUN \
 RUN a2enmod rewrite
 
 # Download and unzip formalms
+# Very important, the formalms zip MUST BE unzipped in a subfolder of the /app directory
+# failure to do that will result in ..Lms URL to be generated after login
 RUN \
   echo "**** download formalms ****" && \
   wget -O formalms.zip https://sourceforge.net/projects/forma/files/version-4.x/formalms-${VERSION}.zip/download && \
   mkdir -p /app && \
   unzip formalms.zip -d /app && \
-  mv /app/formalms /app/tt && \
-  find /app/tt -mindepth 1 -maxdepth 1 -exec mv -t /app {} + && \
-  rmdir /app/tt && \
+  ls -la /app && \
   rm formalms.zip
 
 WORKDIR /app
 RUN \
-  cp config.dist.php config.php && \
+  cp formalms/config.dist.php formalms/config.php && \
   docker-php-ext-configure mysqli && \
   docker-php-ext-install mysqli && \
   docker-php-ext-install pdo pdo_mysql && \
