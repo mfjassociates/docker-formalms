@@ -1,3 +1,4 @@
+# Updated with recent versions of dependencies
 FROM php:8.1-apache-bullseye
 ARG VERSION=4.0.11
 
