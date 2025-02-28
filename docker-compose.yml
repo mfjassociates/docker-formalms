@@ -13,6 +13,9 @@ services:
     environment:
       PUID: 1001
       GUID: 1001
+      DB_HOST: "${DB_HOST}"
+      DB_NAME: "${DB_NAME}"
+      DB_USER: "${DB_USER}"
       # LDAP Configuration
       LDAP_HOST: "ldap.mfj.local"
       LDAP_PORT: "389"
@@ -25,7 +28,8 @@ services:
     entrypoint: [
       "/bin/sh", 
       "-c", 
-      "ldap-config.sh"
+      "ldap-config.sh",
+      "${DB_PASS}"
     ]
 
   db:

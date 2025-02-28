@@ -7,7 +7,7 @@ pw=$(cat /run/secrets/ldap_bind_pw)
 # Configure database settings
 sed -i "s|cfg\\['db_host'\\] = 'localhost'|cfg['db_host'] = '${DB_HOST}'|" /app/formalms/config.php
 sed -i "s|cfg\\['db_user'\\] = 'root'|cfg['db_user'] = '${DB_USER}'|" /app/formalms/config.php
-sed -i "s|cfg\\['db_pass'\\] = ''|cfg['db_pass'] = '${DB_PASS}'|" /app/formalms/config.php
+sed -i "s|cfg\\['db_pass'\\] = ''|cfg['db_pass'] = '${1}'|" /app/formalms/config.php
 sed -i "s|cfg\\['db_name'\\] = 'forma'|cfg['db_name'] = '${DB_NAME}'|" /app/formalms/config.php
 
 # Configure LDAP settings
