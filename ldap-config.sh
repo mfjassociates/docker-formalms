@@ -4,9 +4,6 @@
 # Exit immediately if any command fails
 set -e
 
-# Optional: Exit if any command in a pipeline fails (not just the last one)
-set -o pipefail
-
 # Optional: Treat unset variables as errors
 set -u
 
@@ -20,17 +17,24 @@ sed -i "s|cfg\\['db_user'\\] = 'root'|cfg['db_user'] = '${DB_USER}'|" /app/forma
 sed -i "s|cfg\\['db_pass'\\] = ''|cfg['db_pass'] = '${db_pw}'|" /app/formalms/config.php
 sed -i "s|cfg\\['db_name'\\] = 'forma'|cfg['db_name'] = '${DB_NAME}'|" /app/formalms/config.php
 
-# Configure LDAP settings
-sed -i "s|cfg\\['user_pwd_type'\\] = ''|cfg['user_pwd_type'] = 'ldap'|" /app/formalms/config.php
-sed -i "s|cfg\\['ldap_host'\\] = ''|cfg['ldap_host'] = '${LDAP_HOST}'|" /app/formalms/config.php
-sed -i "s|cfg\\['ldap_port'\\] = ''|cfg['ldap_port'] = '${LDAP_PORT}'|" /app/formalms/config.php
-sed -i "s|cfg\\['ldap_base_dn'\\] = ''|cfg['ldap_base_dn'] = '${LDAP_BASE_DN}'|" /app/formalms/config.php
-sed -i "s|cfg\\['ldap_bind_dn'\\] = ''|cfg['ldap_bind_dn'] = '${LDAP_BIND_DN}'|" /app/formalms/config.php
-sed -i "s|cfg\\['ldap_bind_password'\\] = ''|cfg['ldap_bind_password'] = '${pw}'|" /app/formalms/config.php
-sed -i "s|cfg\\['ldap_filter'\\] = ''|cfg['ldap_filter'] = '${LDAP_USER_FILTER}'|" /app/formalms/config.php
-sed -i "s|cfg\\['ldap_user_attr'\\] = ''|cfg['ldap_user_attr'] = '${LDAP_USERNAME_ATTRIBUTE}'|" /app/formalms/config.php
-sed -i "s|cfg\\['ldap_realname_attr'\\] = ''|cfg['ldap_realname_attr'] = '${LDAP_REALNAME_ATTRIBUTE}'|" /app/formalms/config.php
-sed -i "s|cfg\\['ldap_email_attr'\\] = ''|cfg['ldap_email_attr'] = '${LDAP_EMAIL_ATTRIBUTE}'|" /app/formalms/config.php
-
+# Check if LDAP settings already exist
+if ! grep -q "cfg\['user_pwd_type'\]" /app/formalms/config.dist.php; then
+  echo "
+  // LDAP Configuration
+  \$cfg['user_pwd_type'] = 'ldap';
+  \$cfg['ldap_host'] = '${LDAP_HOST}';
+  \$cfg['ldap_port'] = '${LDAP_PORT}';
+  \$cfg['ldap_base_dn'] = '${LDAP_BASE_DN}';
+  \$cfg['ldap_bind_dn'] = '${LDAP_BIND_DN}';
+  \$cfg['ldap_bind_password'] = '${pw}';
+  \$cfg['ldap_filter'] = '${LDAP_USER_FILTER}';
+  \$cfg['ldap_user_attr'] = '${LDAP_USERNAME_ATTRIBUTE}';
+  \$cfg['ldap_realname_attr'] = '${LDAP_REALNAME_ATTRIBUTE}';
+  \$cfg['ldap_email_attr'] = '${LDAP_EMAIL_ATTRIBUTE}';
+  " >> /app/formalms/config.dist.php
+  echo "LDAP settings added to config.php"
+else
+  echo "LDAP settings already exist in config.php"
+fi
 # Start Apache
 apache2-foreground
