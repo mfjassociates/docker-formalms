@@ -1,10 +1,15 @@
 secrets:
-  ldap_bind_pw_portainer:
+  ldap_bind_pw:
     file: $SECRETS_PATH/ldap_bind_pw.txt
+  formalms_db_pw:
+    file: $SECRETS_PATH/formalms_db_pw.txt
 services:
 
   formalms:
     image: marioja/formalms
+    secrets:
+      - ldap_bind_pw
+      - formalms_db_pw
     restart: unless-stopped
     ports:
       - 7080:80
@@ -28,8 +33,7 @@ services:
     entrypoint: [
       "/bin/sh", 
       "-c", 
-      "ldap-config.sh",
-      "${DB_PASS}"
+      "ldap-config.sh"
     ]
 
   db:

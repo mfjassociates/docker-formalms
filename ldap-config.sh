@@ -1,13 +1,23 @@
 #!/bin/sh
-# filepath: /z:/portainer/data/docker-formalms/ldap-config.sh
+# filepath: ldap-config.sh
+
+# Exit immediately if any command fails
+set -e
+
+# Optional: Exit if any command in a pipeline fails (not just the last one)
+set -o pipefail
+
+# Optional: Treat unset variables as errors
+set -u
 
 # Read the content of the secret file into a variable
 pw=$(cat /run/secrets/ldap_bind_pw)
+db_pw=$(cat /run/secrets/formalms_db_pw)
 
 # Configure database settings
 sed -i "s|cfg\\['db_host'\\] = 'localhost'|cfg['db_host'] = '${DB_HOST}'|" /app/formalms/config.php
 sed -i "s|cfg\\['db_user'\\] = 'root'|cfg['db_user'] = '${DB_USER}'|" /app/formalms/config.php
-sed -i "s|cfg\\['db_pass'\\] = ''|cfg['db_pass'] = '${1}'|" /app/formalms/config.php
+sed -i "s|cfg\\['db_pass'\\] = ''|cfg['db_pass'] = '${db_pw}'|" /app/formalms/config.php
 sed -i "s|cfg\\['db_name'\\] = 'forma'|cfg['db_name'] = '${DB_NAME}'|" /app/formalms/config.php
 
 # Configure LDAP settings
