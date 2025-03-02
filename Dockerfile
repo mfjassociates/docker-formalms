@@ -40,6 +40,7 @@ WORKDIR /app
 COPY ldap-config.sh /usr/local/bin/ldap-config.sh
 RUN chmod +x /usr/local/bin/ldap-config.sh
 COPY update_db.php /app/formalms/update_db.php
+COPY php.ini /usr/local/etc/php/php.ini
 
 # Create and apply LDAP patch to use LDAP v3 protocol
 RUN echo 'diff --git a/FormaUser.php b/FormaUser.php\n--- a/FormaUser.php\n+++ b/FormaUser.php\n@@ -622,6 +622,8 @@\n             if (!($ldap_conn = @ldap_connect(Get::sett('\''ldap_server'\''), Get::sett('\''ldap_port'\'', '\''389'\'')))) {\n                 exit('\''Could not connect to ldap server'\'');\n             }\n+            ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);\n+            ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);\n \n             //bind on server\n             $ldap_user = preg_replace('\''/\\$user/'\'', $login, Get::sett('\''ldap_user_string'\''));' > /tmp/ldap.patch && \
