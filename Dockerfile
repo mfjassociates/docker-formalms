@@ -39,7 +39,29 @@ WORKDIR /app
 
 COPY ldap-config.sh /usr/local/bin/ldap-config.sh
 RUN chmod +x /usr/local/bin/ldap-config.sh
+COPY update_db.php /app/formalms/update_db.php
 
+# Create and apply LDAP patch to use LDAP v3 protocol
+RUN echo 'diff --git a/FormaUser.php b/FormaUser.php\n--- a/FormaUser.php\n+++ b/FormaUser.php\n@@ -622,6 +622,8 @@\n             if (!($ldap_conn = @ldap_connect(Get::sett('\''ldap_server'\''), Get::sett('\''ldap_port'\'', '\''389'\'')))) {\n                 exit('\''Could not connect to ldap server'\'');\n             }\n+            ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);\n+            ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);\n \n             //bind on server\n             $ldap_user = preg_replace('\''/\\$user/'\'', $login, Get::sett('\''ldap_user_string'\''));' > /tmp/ldap.patch && \
+    if [ -f /app/formalms/lib/FormaUser.php ]; then \
+      echo "Applying LDAP v3 protocol patch..." && \
+      patch /app/formalms/lib/FormaUser.php /tmp/ldap.patch && \
+      rm /tmp/ldap.patch && \
+      echo "LDAP patch applied successfully"; \
+    else \
+      echo "WARNING: FormaUser.php not found, LDAP patch not applied"; \
+    fi
+
+# Do not unbind LDAP connection twice when using LDAP alternate check
+RUN echo 'diff --git a/html/lib/FormaUser.php b/html/lib/FormaUser.php\nindex 0ba4febdd..aee9afa1b 100755\n--- a/html/lib/FormaUser.php\n+++ b/html/lib/FormaUser.php\n@@ -639,8 +639,9 @@ class FormaUser\n                     return $false_public;\n                 }\n                 // End edit\n+            } else {\n+                ldap_unbind($ldap_conn);\n             }\n-            ldap_unbind($ldap_conn);\n         } elseif (!$user_manager->password_verify_update($password, $user_info[ACL_INFO_PASS], $user_info[ACL_INFO_IDST])) {\n             return false;\n         }\n-- \n' >/tmp/ldap-unbind.patch && \
+    if [ -f /app/formalms/lib/FormaUser.php ]; then \
+      echo "Applying LDAP unbind patch..." && \
+      patch /app/formalms/lib/FormaUser.php /tmp/ldap-unbind.patch && \
+      rm /tmp/ldap-unbind.patch && \
+      echo "LDAP unbind patch applied successfully"; \
+    else \
+      echo "WARNING: FormaUser.php not found, LDAP unbind patch not applied"; \
+    fi
 # Install required PHP extensions and configure Apache to use /app/formalms as document root
 RUN \
   cp formalms/config.dist.php formalms/config.php && \

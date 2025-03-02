@@ -42,7 +42,7 @@ services:
       DB_NAME: "${DB_NAME}"
       DB_USER: "${DB_USER}"
       # LDAP Configuration
-      LDAP_HOST: "${LDAP_HOST}"
+      LDAP_SERVER: "${LDAP_SERVER}"
       LDAP_PORT: "389"
       LDAP_USER_STRING: "${LDAP_USER_STRING}"
       # The next two variables have the value "on" or "off"

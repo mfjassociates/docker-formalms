@@ -16,19 +16,7 @@ sed -i "s|cfg\\['db_user'\\] = 'root'|cfg['db_user'] = '${DB_USER}'|" /app/forma
 sed -i "s|cfg\\['db_pass'\\] = ''|cfg['db_pass'] = '${db_pw}'|" /app/formalms/config.php
 sed -i "s|cfg\\['db_name'\\] = 'forma'|cfg['db_name'] = '${DB_NAME}'|" /app/formalms/config.php
 
-# Check if LDAP settings already exist
-if ! grep -q "cfg\['ldap_server'\]" /app/formalms/config.php; then
-  echo "
-  // LDAP Configuration
-  \$cfg['ldap_server'] = '${LDAP_HOST}';
-  \$cfg['ldap_port'] = '${LDAP_PORT}';
-  \$cfg['ldap_user_string'] = '${LDAP_USER_STRING}';
-  \$cfg['ldap_alternate_check'] = '${LDAP_ALTERNATE_CHECK}';
-  \$cfg['ldap_used'] = '${LDAP_USERED}';
-  " >> /app/formalms/config.php
-  echo "LDAP settings added to config.php"
-else
-  echo "LDAP settings already exist in config.php"
-fi
+# call update_db.php to update the database
+#php /app/formalms/update_db.php
 # Start Apache
 apache2-foreground
